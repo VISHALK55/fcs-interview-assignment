@@ -62,7 +62,7 @@ public class WarehouseResourceTest {
         given()
           .contentType(ContentType.JSON)
           .body(w)
-          .when().put("/warehouse/MWH.012")
+          .when().post("/warehouse/MWH.012/replacement")
           .then()
              .statusCode(200);
     }
