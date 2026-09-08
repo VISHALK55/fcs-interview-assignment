@@ -61,4 +61,62 @@ public class StoreResourceTest {
           .then()
              .statusCode(204);
     }
+
+    @Test
+    public void testGetStoreNotFound() {
+        given()
+          .when().get("/store/999")
+          .then()
+             .statusCode(404);
+    }
+
+    @Test
+    public void testCreateStoreWithId() {
+        Store s = new Store();
+        s.id = 999L;
+        s.name = "INVALID STORE";
+        s.quantityProductsInStock = 5;
+
+        given()
+          .contentType(ContentType.JSON)
+          .body(s)
+          .when().post("/store")
+          .then()
+             .statusCode(422);
+    }
+
+    @Test
+    public void testUpdateStoreNotFound() {
+        Store s = new Store();
+        s.name = "NOT FOUND STORE";
+        s.quantityProductsInStock = 10;
+
+        given()
+          .contentType(ContentType.JSON)
+          .body(s)
+          .when().put("/store/999")
+          .then()
+             .statusCode(404);
+    }
+
+    @Test
+    public void testUpdateStoreNoName() {
+        Store s = new Store();
+        s.quantityProductsInStock = 10;
+
+        given()
+          .contentType(ContentType.JSON)
+          .body(s)
+          .when().put("/store/2")
+          .then()
+             .statusCode(422);
+    }
+
+    @Test
+    public void testDeleteStoreNotFound() {
+        given()
+          .when().delete("/store/999")
+          .then()
+             .statusCode(404);
+    }
 }
