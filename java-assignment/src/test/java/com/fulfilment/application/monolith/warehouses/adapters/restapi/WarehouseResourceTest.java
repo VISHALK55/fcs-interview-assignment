@@ -24,7 +24,7 @@ public class WarehouseResourceTest {
         Warehouse w = new Warehouse();
         w.setBusinessUnitCode("TEST-WH-1");
         w.setLocation("MWH.012");
-        w.setCapacity(100);
+        w.setCapacity(10);
         w.setStock(10);
         
         given()
