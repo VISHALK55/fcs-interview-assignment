@@ -23,12 +23,11 @@ jobs:
 
     - name: Build and run tests with JaCoCo
       run: |
-        cd fcs-interview-code-assignment-main/java-assignment
+        cd java-assignment
         ./mvnw clean verify -Dquarkus.jacoco.report=true
 
     - name: Check Coverage
       run: |
-        cd fcs-interview-code-assignment-main/java-assignment
+        cd java-assignment
         # Parse jacoco.csv to get coverage and fail if less than 80%
-        # Or use a jacoco-badge-generator or similar action, but a simple script works
         awk -F, '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, " instructions covered"; if (covered/instructions < 0.80) { print "Coverage is below 80%!"; exit 1 } }' target/jacoco-report/jacoco.csv
