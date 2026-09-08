@@ -4,6 +4,9 @@ import com.fulfilment.application.monolith.warehouses.domain.models.Location;
 import com.fulfilment.application.monolith.warehouses.domain.models.Warehouse;
 import com.fulfilment.application.monolith.warehouses.domain.ports.LocationResolver;
 import com.fulfilment.application.monolith.warehouses.domain.ports.WarehouseStore;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.InjectMock;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,18 +17,17 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+@QuarkusTest
 public class CreateWarehouseUseCaseTest {
 
+  @InjectMock
   private WarehouseStore warehouseStore;
-  private LocationResolver locationResolver;
-  private CreateWarehouseUseCase createWarehouseUseCase;
 
-  @BeforeEach
-  void setUp() {
-    warehouseStore = mock(WarehouseStore.class);
-    locationResolver = mock(LocationResolver.class);
-    createWarehouseUseCase = new CreateWarehouseUseCase(warehouseStore, locationResolver);
-  }
+  @InjectMock
+  private LocationResolver locationResolver;
+
+  @Inject
+  private CreateWarehouseUseCase createWarehouseUseCase;
 
   @Test
   void testCreateWarehouseSuccessfully() {

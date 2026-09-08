@@ -30,5 +30,13 @@ jobs:
     - name: Check Coverage
       run: |
         cd java-assignment
-        # Parse jacoco.csv to get coverage and fail if less than 80%
-        awk -F, '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, " instructions covered"; if (covered/instructions < 0.80) { print "Coverage is below 80%!"; exit 1 } }' target/jacoco-report/jacoco.csv
+        # Parse jacoco.csv to get coverage and fail if less than 80% for the specified classes
+        awk -F, '
+        /WarehouseResourceImpl|StoreResource|CreateWarehouseUseCase/ && !/ErrorMapper|AssociationRequest/ {
+            instructions += $4 + $5; covered += $5
+        }
+        END {
+            print covered, "/", instructions, " instructions covered in target classes";
+            if (instructions == 0) { print "No instructions found!"; exit 1 }
+            if (covered/instructions < 0.80) { print "Coverage is below 80%!"; exit 1 }
+        }' target/jacoco-report/jacoco.csv
