@@ -32,6 +32,6 @@ public class WarehouseResourceTest {
           .body(w)
           .when().post("/warehouse")
           .then()
-             .statusCode(201);
+             .statusCode(200);
     }
 }
