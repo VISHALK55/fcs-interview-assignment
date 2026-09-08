@@ -54,4 +54,65 @@ public class CreateWarehouseUseCaseTest {
 
     assertThrows(WebApplicationException.class, () -> createWarehouseUseCase.create(w));
   }
+
+  @Test
+  void testCreateFailsIfLocationInvalid() {
+    Warehouse w = new Warehouse();
+    w.businessUnitCode = "BU1";
+    w.location = "LOC1";
+    when(warehouseStore.findByBusinessUnitCode("BU1")).thenReturn(null);
+    when(locationResolver.resolveByIdentifier("LOC1")).thenReturn(null);
+
+    assertThrows(WebApplicationException.class, () -> createWarehouseUseCase.create(w));
+  }
+
+  @Test
+  void testCreateFailsIfMaxWarehousesReached() {
+    Warehouse w = new Warehouse();
+    w.businessUnitCode = "BU1";
+    w.location = "LOC1";
+    
+    when(warehouseStore.findByBusinessUnitCode("BU1")).thenReturn(null);
+    when(locationResolver.resolveByIdentifier("LOC1")).thenReturn(new Location("LOC1", 1, 20));
+    
+    Warehouse existing = new Warehouse();
+    existing.location = "LOC1";
+    existing.capacity = 5;
+    when(warehouseStore.getAll()).thenReturn(List.of(existing));
+
+    assertThrows(WebApplicationException.class, () -> createWarehouseUseCase.create(w));
+  }
+
+  @Test
+  void testCreateFailsIfCapacityExceeded() {
+    Warehouse w = new Warehouse();
+    w.businessUnitCode = "BU1";
+    w.location = "LOC1";
+    w.capacity = 20;
+    
+    when(warehouseStore.findByBusinessUnitCode("BU1")).thenReturn(null);
+    when(locationResolver.resolveByIdentifier("LOC1")).thenReturn(new Location("LOC1", 2, 20));
+    
+    Warehouse existing = new Warehouse();
+    existing.location = "LOC1";
+    existing.capacity = 5;
+    when(warehouseStore.getAll()).thenReturn(List.of(existing));
+
+    assertThrows(WebApplicationException.class, () -> createWarehouseUseCase.create(w));
+  }
+
+  @Test
+  void testCreateFailsIfStockExceedsCapacity() {
+    Warehouse w = new Warehouse();
+    w.businessUnitCode = "BU1";
+    w.location = "LOC1";
+    w.capacity = 10;
+    w.stock = 15;
+    
+    when(warehouseStore.findByBusinessUnitCode("BU1")).thenReturn(null);
+    when(locationResolver.resolveByIdentifier("LOC1")).thenReturn(new Location("LOC1", 2, 20));
+    when(warehouseStore.getAll()).thenReturn(List.of());
+
+    assertThrows(WebApplicationException.class, () -> createWarehouseUseCase.create(w));
+  }
 }
