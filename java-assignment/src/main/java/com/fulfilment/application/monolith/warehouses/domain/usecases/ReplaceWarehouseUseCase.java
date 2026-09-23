@@ -3,6 +3,7 @@ package com.fulfilment.application.monolith.warehouses.domain.usecases;
 import com.fulfilment.application.monolith.warehouses.domain.models.Warehouse;
 import com.fulfilment.application.monolith.warehouses.domain.ports.ReplaceWarehouseOperation;
 import com.fulfilment.application.monolith.warehouses.domain.ports.WarehouseStore;
+import com.fulfilment.application.monolith.warehouses.domain.validators.WarehouseValidator;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -10,26 +11,19 @@ public class ReplaceWarehouseUseCase implements ReplaceWarehouseOperation {
 
   private final WarehouseStore warehouseStore;
   private final com.fulfilment.application.monolith.warehouses.domain.ports.ArchiveWarehouseOperation archiveWarehouseOperation;
+  private final WarehouseValidator warehouseValidator;
 
-  public ReplaceWarehouseUseCase(WarehouseStore warehouseStore, com.fulfilment.application.monolith.warehouses.domain.ports.ArchiveWarehouseOperation archiveWarehouseOperation) {
+  public ReplaceWarehouseUseCase(WarehouseStore warehouseStore, com.fulfilment.application.monolith.warehouses.domain.ports.ArchiveWarehouseOperation archiveWarehouseOperation, WarehouseValidator warehouseValidator) {
     this.warehouseStore = warehouseStore;
     this.archiveWarehouseOperation = archiveWarehouseOperation;
+    this.warehouseValidator = warehouseValidator;
   }
 
   @Override
   public void replace(Warehouse newWarehouse) {
     Warehouse oldWarehouse = warehouseStore.findByBusinessUnitCode(newWarehouse.businessUnitCode);
-    if (oldWarehouse == null || oldWarehouse.archivedAt != null) {
-      throw new jakarta.ws.rs.WebApplicationException("Active warehouse to replace not found.", 404);
-    }
-
-    if (newWarehouse.capacity < oldWarehouse.stock) {
-      throw new jakarta.ws.rs.WebApplicationException("New warehouse capacity cannot accommodate old stock.", 400);
-    }
-
-    if (!newWarehouse.stock.equals(oldWarehouse.stock)) {
-      throw new jakarta.ws.rs.WebApplicationException("New warehouse stock must match old warehouse stock.", 400);
-    }
+    
+    warehouseValidator.validateForReplacement(newWarehouse, oldWarehouse);
 
     archiveWarehouseOperation.archive(oldWarehouse);
     

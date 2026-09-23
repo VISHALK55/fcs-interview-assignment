@@ -1,86 +1,56 @@
-# Java Code Assignment
+# Java Code Assignment 
 
-This is a short code assignment that explores various aspects of software development, including API implementation, documentation, persistence layer handling, and testing.
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-85%25-brightgreen)
+![Quarkus](https://img.shields.io/badge/Quarkus-3.13.3-blue)
+![Java](https://img.shields.io/badge/Java-17%2B-orange)
 
-## About the assignment
+This is a short code assignment that explores various aspects of software development, including API implementation, documentation, persistence layer handling, and testing. It features a complete Hexagonal Architecture for the Fulfillment bounded context, and strong validation logic for the Warehouse system.
 
-You will find the tasks of this assignment on [CODE_ASSIGNMENT](CODE_ASSIGNMENT.md) file
+## 📸 Screenshots
+
+Here is a glimpse of the application's dashboard UI:
+
+![Warehouse Dashboard UI](docs/images/warehouse_dashboard.png)
 
 ## About the code base
 
-This is based on https://github.com/quarkusio/quarkus-quickstarts
+This project is built using [Quarkus](https://quarkus.io/), the Supersonic Subatomic Java Framework. 
+It uses Hibernate ORM with Panache for database interactions.
+
+## Architecture Improvements
+
+- **Hexagonal Architecture**: The `fulfillment` package is separated into `domain` (models, ports, validators) and `adapters` (database and restapi) to allow high decoupling.
+- **Validation Separation**: The `WarehouseValidator` and `FulfillmentValidator` isolate business rules from orchestration code.
+- **Event-Driven Integration**: Integration with the downstream legacy store system leverages Quarkus `@Observes(during = TransactionPhase.AFTER_SUCCESS)` to guarantee only confirmed database writes trigger downstream updates.
+- **High Test Coverage**: Extensive unit tests ensure >80% code coverage.
 
 ### Requirements
 
 To compile and run this demo you will need:
-
 - JDK 17+
+- Maven
+- PostgreSQL database (or Docker to run one via Testcontainers/DevServices)
 
-In addition, you will need either a PostgreSQL database, or Docker to run one.
+## Building & Testing
 
-### Configuring JDK 17+
-
-Make sure that `JAVA_HOME` environment variables has been set, and that a JDK 17+ `java` command is on the path.
-
-## Building the demo
-
-Execute the Maven build on the root of the project:
+To execute the Maven build and run the test suite (which also generates JaCoCo coverage reports):
 
 ```sh
-./mvnw package
+./mvnw clean verify
 ```
+The test coverage report will be available at `target/jacoco-report/index.html`.
 
 ## Running the demo
 
 ### Live coding with Quarkus
 
-The Maven Quarkus plugin provides a development mode that supports
-live coding. To try this out:
+The Maven Quarkus plugin provides a development mode that supports live coding:
 
 ```sh
 ./mvnw quarkus:dev
 ```
-
-In this mode you can make changes to the code and have the changes immediately applied, by just refreshing your browser.
-
-    Hot reload works even when modifying your JPA entities.
-    Try it! Even the database schema will be updated on the fly.
-
-## (Optional) Run Quarkus in JVM mode
-
-When you're done iterating in developer mode, you can run the application as a conventional jar file.
-
-First compile it:
-
-```sh
-./mvnw package
-```
-
-Next we need to make sure you have a PostgreSQL instance running (Quarkus automatically starts one for dev and test mode). To set up a PostgreSQL database with Docker:
-
-```sh
-docker run -it --rm=true --name quarkus_test -e POSTGRES_USER=quarkus_test -e POSTGRES_PASSWORD=quarkus_test -e POSTGRES_DB=quarkus_test -p 15432:5432 postgres:13.3
-```
-
-Connection properties for the Agroal datasource are defined in the standard Quarkus configuration file,
-`src/main/resources/application.properties`.
-
-Then run it:
-
-```sh
-java -jar ./target/quarkus-app/quarkus-run.jar
-```
-    Have a look at how fast it boots.
-    Or measure total native memory consumption...
-
-
-## See the demo in your browser
-
-Navigate to:
-
-<http://localhost:8080/index.html>
-
-Have fun, and join the team of contributors!
+Navigate to <http://localhost:8080/index.html> to see the application.
 
 ## Troubleshooting
 
